@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            background-color: #2e2e2e;
+            margin: 0;
+            color: #fff;
+        }
+        
+        h1 {
+            font-size: 36px;
+            color: #f0c674;
+            text-align: center;
+            margin-bottom: 20px;
+            animation: fadeIn 1.5s ease-in-out;
+        }
+        
+        .search-bar {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            width: 100%;
+            max-width: 500px;
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            font-size: 18px;
+            flex: 1;
+            border: none;
+            outline: none;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #f0c674;
+            color: #2e2e2e;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        button:hover {
+            background-color: #c6a700;
+            transform: scale(1.05);
+        }
+
+        /* Weather Container */
+        .weather-container, .recent-visit {
+            max-width: 800px;
+            width: 100%;
+            background-color: #3a3a3a;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: fadeIn 1s ease-in-out;
+            transition: transform 0.3s;
+        }
+
+        .weather-container:hover, .recent-visit:hover {
+            transform: scale(1.03);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Location and Date */
+        .location-datetime {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .location {
+            font-size: 20px;
+            color: #f0c674;
+            font-weight: bold;
+        }
+
+        .datetime {
+            font-size: 18px;
+            color: #ccc;
+        }
+
+        /* Info Styling */
+        #current-temperature,
+        #current-condition,
+        #feels-like {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        #humidity, #wind-speed, #visibility, #sunrise, #sunset {
+            font-weight: 570;
+            font-size: 18px;
+            color: #ccc;
+            margin: 5px;
+        }
+
+        .additional-info span {
+            display: inline-block;
+            margin: 5px;
+        }
+
+        /* Recent Visits Section */
+        .recent-visits-container {
+            width: 100%;
+            max-width: 800px;
+            margin-top: 30px;
+        }
+
+        .recent-title {
+            font-size: 24px;
+            color: #f0c674;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        /* Animation */
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: translateY(-20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .footer {
+            margin-top: 30px;
+            color: #777;
+            font-size: 14px;
+        }
+
+        /* Dynamic Alert Styling */
+        .alert-box {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #f0c674;
+            color: #2e2e2e;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: none;
+        }
+        .alert-button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .refresh-button {
+            background-color: #f0c674;
+            color: #2e2e2e;
+        }
+        .refresh-button:hover {
+            background-color: #c6a700;
+        }
+        .cancel-button {
+            background-color: #ff4c4c;
+            color: #fff;
+        }
+        .cancel-button:hover {
+            background-color: #d43d3d;
+        }
+    </style>
+</head>
+<body>
+    <h1>🌤 Weather Dashboard</h1>
+    
+    <div class="alert-box" id="alert-box">
+        <p>Are you sure you want to refresh? All recent entries will be cleared.</p>
+        <button class="alert-button refresh-button" onclick="confirmRefresh()">Refresh</button>
+        <button class="alert-button cancel-button" onclick="cancelRefresh()">Cancel</button>
+    </div>
+
+    <div class="search-bar">
+        <input type="text" id="search-input" placeholder="Enter city name" onkeydown="handleKeyPress(event)">
+        <button onclick="getWeatherBySearch()">🔍 Search</button>
+    </div>
+
+    <div class="weather-container" id="weather-container" style="display: none;">
+        <div class="location-datetime">
+            <div id="location" class="location">Location: --</div>
+            <div id="current-datetime" class="datetime">[--/-- --:--]</div>
+        </div>
+        <div id="current-weather">
+            <div id="current-temperature">--°C</div>
+            <div id="current-condition">--</div>
+            <div id="feels-like">Feels like: --°C</div>
+        </div>
+        <div class="additional-info">
+            <span id="humidity">Humidity: --%</span>
+            <span id="wind-speed">Wind: -- km/h</span>
+            <span id="visibility">Visibility: -- km</span>
+            <span id="sunrise">Sunrise: --</span>
+            <span id="sunset">Sunset: --</span>
+        </div>
+    </div>
+
+    <div class="recent-visits-container">
+        <h2 class="recent-title">Recent Visits</h2>
+        <div id="recent-visits"></div>
+    </div>
+
+    <div class="footer">
+        &copy; 2024 Weather Dashboard. All Rights Reserved.
+    </div>
+
+    <script>
+        window.addEventListener("beforeunload", (event) => {
+            event.preventDefault();
+            document.getElementById("alert-box").style.display = "block";
+            return false;
+        });
+
+        function confirmRefresh() {
+            location.reload();
+        }
+
+        function cancelRefresh() {
+            document.getElementById("alert-box").style.display = "none";
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === "Enter") {
+                getWeatherBySearch();
+            }
+        }
+
+        async function getWeatherBySearch() {
+            const searchInput = document.getElementById('search-input');
+            const city = searchInput.value.trim();
+            const apiKey = '5d649c5c147004c7a9e2b651b32f1580';
+
+            if (!city) {
+                alert("Please enter a city name");
+                return;
+            }
+
+            try {
+                const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${apiKey}&units=metric`;
+                const response = await fetch(weatherUrl);
+                if (!response.ok) throw new Error("City not found or request failed");
+
+                const weatherData = await response.json();
+                displayCurrentWeather(weatherData);
+                addRecentVisit(weatherData);
+            } catch (error) {
+                alert(error.message);
+            }
+
+            searchInput.value = '';
+        }
+
+        function displayCurrentWeather(data) {
+            document.getElementById('weather-container').style.display = 'block';
+document.getElementById('current-datetime').textContent = `[${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}]`;
+
+            document.getElementById('location').textContent = `${data.name}, ${data.sys.country}`;
+            document.getElementById('current-temperature').innerHTML = `${data.main.temp}°C`;
+            document.getElementById('current-condition').innerHTML = `${getWeatherIcon(data.weather[0].icon)} ${data.weather[0].description}`;
+            document.getElementById('feels-like').innerHTML = `Feels like: ${data.main.feels_like}°C`;
+            document.getElementById('humidity').innerHTML = `💧 Humidity: ${data.main.humidity}%`;
+            document.getElementById('wind-speed').innerHTML = `🌬️ Wind: ${data.wind.speed} km/h`;
+            document.getElementById('visibility').innerHTML = `👁️ Visibility: ${(data.visibility / 1000).toFixed(1)} km`;
+            document.getElementById('sunrise').innerHTML = `🌅 Sunrise: ${new Date(data.sys.sunrise * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+            document.getElementById('sunset').innerHTML = `🌇 Sunset: ${new Date(data.sys.sunset * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+        }
+
+        function addRecentVisit(data) {
+            const recentVisitsContainer = document.getElementById('recent-visits');
+            const recentVisitElement = document.createElement('div');
+            recentVisitElement.classList.add('weather-container', 'recent-visit');
+            recentVisitElement.innerHTML = `
+                <div class="location-datetime">
+                    <div class="location">${data.name}, ${data.sys.country}</div>
+                </div>
+                <div class="additional-info">
+                    <span>🌡️ Temp: ${data.main.temp}°C</span>
+                    <span>${getWeatherIcon(data.weather[0].icon)} ${data.weather[0].description}</span>
+                    <span>💧 Humidity: ${data.main.humidity}%</span>
+                </div>
+            `;
+
+            if (recentVisitsContainer.children.length >= 6) {
+                recentVisitsContainer.removeChild(recentVisitsContainer.lastChild);
+            }
+            recentVisitsContainer.prepend(recentVisitElement);
+        }
+
+        function getWeatherIcon(iconCode) {
+            const iconMap = {
+                "01d": "☀️", "01n": "🌑", "02d": "🌤", "02n": "☁️",
+                "03d": "🌥", "03n": "☁️", "04d": "☁️", "04n": "☁️",
+                "09d": "🌧", "09n": "🌧", "10d": "🌦", "10n": "🌦",
+                "11d": "⛈", "11n": "⛈", "13d": "❄️", "13n": "❄️",
+                "50d": "🌫", "50n": "🌫"
+            };
+            return iconMap[iconCode] || "☀️";
+        }
+    </script>
+</body>
+</html>
