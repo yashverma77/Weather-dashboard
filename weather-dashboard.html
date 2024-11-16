@@ -6,6 +6,7 @@
     <title>Weather Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
     <style>
         /* General Styles */
         body {
@@ -147,53 +148,79 @@
             font-size: 14px;
         }
 
-        /* Dynamic Alert Styling */
-        .alert-box {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: #f0c674;
-            color: #2e2e2e;
-            padding: 20px;
-            border-radius: 8px;
-            text-align: center;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            display: none;
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 28px;
+            }
+
+            .search-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            button {
+                padding: 10px;
+                font-size: 16px;
+            }
+
+            .weather-container,
+            .recent-visits-container {
+                padding: 15px;
+            }
+
+            .location {
+                font-size: 18px;
+            }
+
+            #current-temperature,
+            #current-condition,
+            #feels-like {
+                font-size: 22px;
+            }
+
+            #humidity, #wind-speed, #visibility, #sunrise, #sunset {
+                font-size: 16px;
+            }
         }
-        .alert-button {
-            margin-top: 10px;
-            padding: 10px 20px;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        .refresh-button {
-            background-color: #f0c674;
-            color: #2e2e2e;
-        }
-        .refresh-button:hover {
-            background-color: #c6a700;
-        }
-        .cancel-button {
-            background-color: #ff4c4c;
-            color: #fff;
-        }
-        .cancel-button:hover {
-            background-color: #d43d3d;
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 24px;
+            }
+
+            input[type="text"] {
+                font-size: 16px;
+                padding: 8px;
+            }
+
+            button {
+                font-size: 14px;
+                padding: 8px 16px;
+            }
+
+            .location {
+                font-size: 16px;
+            }
+
+            #current-temperature,
+            #current-condition,
+            #feels-like {
+                font-size: 20px;
+            }
+
+            .footer {
+                font-size: 12px;
+            }
+
+            #humidity, #wind-speed, #visibility, #sunrise, #sunset {
+                font-size: 14px;
+            }
         }
     </style>
 </head>
 <body>
     <h1>🌤 Weather Dashboard</h1>
-    
-    <div class="alert-box" id="alert-box">
-        <p>Are you sure you want to refresh? All recent entries will be cleared.</p>
-        <button class="alert-button refresh-button" onclick="confirmRefresh()">Refresh</button>
-        <button class="alert-button cancel-button" onclick="cancelRefresh()">Cancel</button>
-    </div>
 
     <div class="search-bar">
         <input type="text" id="search-input" placeholder="Enter city name" onkeydown="handleKeyPress(event)">
@@ -229,21 +256,7 @@
     </div>
 
     <script>
-        window.addEventListener("beforeunload", (event) => {
-            event.preventDefault();
-            document.getElementById("alert-box").style.display = "block";
-            return false;
-        });
-
-        function confirmRefresh() {
-            location.reload();
-        }
-
-        function cancelRefresh() {
-            document.getElementById("alert-box").style.display = "none";
-        }
-
-        function handleKeyPress(event) {
+         function handleKeyPress(event) {
             if (event.key === "Enter") {
                 getWeatherBySearch();
             }
@@ -253,6 +266,7 @@
             const searchInput = document.getElementById('search-input');
             const city = searchInput.value.trim();
             const apiKey = '5d649c5c147004c7a9e2b651b32f1580';
+            
 
             if (!city) {
                 alert("Please enter a city name");
@@ -320,6 +334,7 @@ document.getElementById('current-datetime').textContent = `[${new Date().toLocal
             };
             return iconMap[iconCode] || "☀️";
         }
+        // JavaScript functionality as in previous version
     </script>
 </body>
 </html>
