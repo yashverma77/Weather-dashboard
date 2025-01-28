@@ -299,8 +299,8 @@ document.getElementById('current-datetime').textContent = `[${new Date().toLocal
             document.getElementById('humidity').innerHTML = `💧 Humidity: ${data.main.humidity}%`;
             document.getElementById('wind-speed').innerHTML = `🌬️ Wind: ${data.wind.speed} km/h`;
             document.getElementById('visibility').innerHTML = `👁️ Visibility: ${(data.visibility / 1000).toFixed(1)} km`;
-            document.getElementById('sunrise').innerHTML = `🌅 Sunrise: ${new Date(data.sys.sunrise * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
-            document.getElementById('sunset').innerHTML = `🌇 Sunset: ${new Date(data.sys.sunset * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+            document.getElementById('sunrise').innerHTML = `🌅 Sunrise: ${new Date(data.sys.sunrise * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}`;
+document.getElementById('sunset').innerHTML = `🌇 Sunset: ${new Date(data.sys.sunset * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}`;
         }
 
         function addRecentVisit(data) {
